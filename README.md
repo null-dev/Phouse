@@ -10,8 +10,8 @@ Be aware that this may damage your phone's camera, I recommend you place a stick
 
 #FAQ
 
-Q: WHY U USE LIBGDX, WHY NOT JUST USE SDK???
+Q: WHY U USE LIBGDX, WHY NOT JUST USE SDK???<br>
 A: This is a proof of concept and because I have more experiance with libGDX, I'll use that...
 
-Q: I BROKE MY CAMERA, U MUST PAY >:( >:(...
+Q: I BROKE MY CAMERA, U MUST PAY >:( >:(...<br>
 A: I am not liabe if your phone's camera got scratched up...
