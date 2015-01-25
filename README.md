@@ -8,7 +8,7 @@ This enables you to work much more smoothly.
 
 Be aware that this may damage your phone's camera, I recommend you place a sticky note underneath it or something...
 
-This app is <strong>PROOF OF CONCEPT</strong>!
+This app is <strong>PROOF OF CONCEPT</strong>, do not use this in production environments!
 
 #FAQ
 
