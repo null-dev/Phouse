@@ -10,8 +10,11 @@ Be aware that this may damage your phone's camera, I recommend you place a stick
 
 #FAQ
 
-Q: WHY U USE LIBGDX, WHY NOT JUST USE SDK???<br>
+Q: WHY U USE LIBGDX, WHY NOT JUST USE NATIVE GUI???<br>
 A: This is a proof of concept and because I have more experiance with libGDX, I'll use that...
 
 Q: I BROKE MY CAMERA, U MUST PAY >:( >:(...<br>
-A: I am not liabe if your phone's camera got scratched up...
+A: I am not liable if your phone's camera got scratched up...
+
+Q: Why are you using one program for both the desktop and mobile?
+A: Because one project is easier to work with for me... (I know it's not user friendly but again, this is proof of concept)
