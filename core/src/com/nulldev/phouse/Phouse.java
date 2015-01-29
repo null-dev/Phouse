@@ -3,41 +3,117 @@ package com.nulldev.phouse;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Phouse extends ApplicationAdapter {
+    public static String currentStage = "mainStage";
+    private int menuScale = 200;
+
+    private Stage mainStage;
+    private BitmapFont font;
+    private BitmapFont headerFont;
+    private BitmapFont buttonFont;
+    private Skin skin;
+    private Table mainMenuTable;
+
+    private Label mainMenuHeader;
+    private Label mainMenuInstruct;
+
+    private TextButton WIFIButton;
+    private TextButton USBButton;
+    private TextButton BluetoothButton;
+    private TextButton enterIPButton;
+
 	SpriteBatch batch;
 	Texture img;
 
     //Strings:
     String logTag = "Phouse:";
 
-    //Default to android...
-	Application.ApplicationType platform = Application.ApplicationType.Android;
-
     @Override
 	public void create () {
-        //Set app type
-        platform = Gdx.app.getType();
 
-        if(platform == Application.ApplicationType.Desktop) {
-            Gdx.app.log(logTag, "Platform: Desktop");
-        } else if(platform == Application.ApplicationType.Android) {
-            Gdx.app.log(logTag, "Platform: Android");
-        }
+        //=======================[UNIVERSAL COMPONENTS]=======================
+        mainStage = new Stage();
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
+        headerFont = new BitmapFont(Gdx.files.internal("ui/fonts/PhouseHeader.fnt"));
+        buttonFont = new BitmapFont(Gdx.files.internal("ui/fonts/Buttons.fnt"));
+        buttonFont.setScale(2);
+        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+        //=======================[MAIN MENU COMPONENTS]=======================
+        mainMenuHeader = new Label("Phouse", skin);
+        mainMenuHeader.setStyle(new Label.LabelStyle(headerFont, Color.WHITE));
+        mainMenuHeader.setFontScale(3);
+        mainMenuInstruct = new Label("Choose a communication method below:", skin);
+        mainMenuInstruct.setFontScale(2);
+
+        WIFIButton = new TextButton("WIFI", skin);
+        WIFIButton.setStyle(new TextButton.TextButtonStyle(WIFIButton.getStyle().up, WIFIButton.getStyle().down, WIFIButton.getStyle().checked, buttonFont));
+        WIFIButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                currentStage = "WIFIEnterIP";
+                IPInputListener IPListener = new IPInputListener();
+                Gdx.input.getTextInput(IPListener, "IP:", "", "Enter your computer's IP");
+            }
+        });
+        USBButton = new TextButton("USB", skin);
+        USBButton.setStyle(new TextButton.TextButtonStyle(USBButton.getStyle().up,USBButton.getStyle().down,USBButton.getStyle().checked,buttonFont));
+        BluetoothButton = new TextButton("Bluetooth", skin);
+        BluetoothButton.setStyle(new TextButton.TextButtonStyle(BluetoothButton.getStyle().up,BluetoothButton.getStyle().down,BluetoothButton.getStyle().checked,buttonFont));
+        enterIPButton = new TextButton("Enter IP Manually", skin);
+
+        mainMenuTable = new Table();
+        mainMenuTable.setFillParent(true);
+        mainMenuTable.add(mainMenuHeader).row();
+        mainMenuTable.add(mainMenuInstruct).row();
+        mainMenuTable.add(WIFIButton).size(menuScale).row();
+        mainMenuTable.add(USBButton).size(menuScale).row();
+        mainMenuTable.add(BluetoothButton).size(menuScale).row();
+        mainStage.addActor(mainMenuTable);
+        Gdx.input.setInputProcessor(mainStage);
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(255, 255, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+        if(currentStage == "mainStage") {
+            mainStage.act();
+            mainStage.draw();
+        }
 	}
+
+    @Override
+    public void dispose() {
+        font.dispose();
+        headerFont.dispose();
+        buttonFont.dispose();
+        mainStage.dispose();
+    }
+}
+
+class IPInputListener implements Input.TextInputListener {
+    @Override
+    public void input (String text) {
+    }
+
+    @Override
+    public void canceled () {
+        Phouse.currentStage = "mainStage";
+    }
 }
