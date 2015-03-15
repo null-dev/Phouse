@@ -7,9 +7,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by nulldev on 24/01/15.
@@ -20,16 +23,20 @@ import java.util.List;
 //Library to connect to the server via socket. (WIFI)
 public class LibNullWIFISocketClient {
 
-    public String serverIpAddress = "";
-    public int serverPort = 0;
+    private static String serverIpAddress = "";
+    public static int serverPort = 0;
 
-    public List<String> commandQueue;
+    public static Queue<String> commandQueue = new LinkedList<String>();
+    //public static List<String> commandQueue = new ArrayList<String>();
 
-    public boolean connected = false;
+    public static boolean connected = false;
 
-    Thread clientThread = new Thread(new ClientThread());
+    static Thread clientThread = new Thread(new ClientThread());
 
-    public void connect(String ip) {
+    static PrintWriter out;
+    static Socket socket;
+
+    public static void connect(String ip) {
         if (!connected) {
             serverIpAddress =ip;
             if (!serverIpAddress.equals("")) {
@@ -38,31 +45,29 @@ public class LibNullWIFISocketClient {
         }
     }
 
-    public void stop() {
-        clientThread.interrupt();
+    public static void stop() {
+        connected = false;
     }
 
-    public void sendCommand(String command) { commandQueue.add(command); }
+    public static void sendCommand(String command) { commandQueue.add(command); }
 
-    public class ClientThread implements Runnable {
+    public static class ClientThread implements Runnable {
 
         public void run() {
             try {
                 InetAddress serverAddr = InetAddress.getByName(serverIpAddress);
                 Gdx.app.log("Client", "Connecting...");
-                Socket socket = new Socket(serverAddr, serverPort);
+                socket = new Socket(serverAddr, serverPort);
                 connected = true;
-                PrintWriter out;
+
                 if(connected) {
                     out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket
                             .getOutputStream())), true);
                     while (connected) {
                         try {
                             //Loop command queue and remove commands executed
-                            for (Iterator<String> iterator = commandQueue.iterator(); iterator.hasNext(); ) {
-                                out.println(iterator.next());
-                                iterator.remove();
-                            }
+                            if(!commandQueue.isEmpty())
+                                out.println(commandQueue.poll());
                         } catch (Exception e) {
                             Gdx.app.error("Client", "Connection Closed", e);
                             connected = false;

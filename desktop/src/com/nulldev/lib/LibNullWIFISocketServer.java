@@ -74,6 +74,7 @@ public class LibNullWIFISocketServer {
                             while ((line = in.readLine()) != null && running) {
                                 //TODO COMMAND RECEIVED
                             	System.out.println("COMMAND RECEIVED!" + line);
+                            	LibNullSensorTranslater.translate(line);
                             }
                         } catch (Exception e) {
                             //TODO CONNECTION LOST

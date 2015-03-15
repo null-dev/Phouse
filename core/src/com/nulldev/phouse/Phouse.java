@@ -17,12 +17,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.nulldev.lib.LibNullWIFISocketClient;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Phouse extends ApplicationAdapter {
+    private long previousTime;
+
     public static String currentStage = "mainStage";
+
     private int menuScale = 200;
 
+    private String WIFIServerIP = "0.0.0.0";
+
     private Stage mainStage;
+    public static Stage WIFIMouseStage;
     private BitmapFont font;
     private BitmapFont headerFont;
     private BitmapFont buttonFont;
@@ -45,9 +55,10 @@ public class Phouse extends ApplicationAdapter {
 
     @Override
 	public void create () {
-
         //=======================[UNIVERSAL COMPONENTS]=======================
+        previousTime = System.currentTimeMillis();
         mainStage = new Stage();
+        WIFIMouseStage = new Stage();
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         headerFont = new BitmapFont(Gdx.files.internal("ui/fonts/PhouseHeader.fnt"));
@@ -95,11 +106,29 @@ public class Phouse extends ApplicationAdapter {
         if(currentStage == "mainStage") {
             mainStage.act();
             mainStage.draw();
+        } else if(currentStage == "WIFIMouse") {
+            //Get accelerometer data
+            //NO DELAY REDUCE LAG SO YEAH
+            //if((System.currentTimeMillis() - previousTime) > 9) {
+            //    previousTime = System.currentTimeMillis();
+                float acX = Gdx.input.getAccelerometerX();
+                float acY = Gdx.input.getAccelerometerY();
+                float acZ = Gdx.input.getAccelerometerZ();
+                String message = Float.toString(acX) + ";" + Float.toString(acY) + ";" + Float.toString(acZ);
+
+                //Send the packet
+                LibNullWIFISocketClient.sendCommand(message);
+            //}
         }
 	}
 
     @Override
+    public void pause() {
+    }
+
+    @Override
     public void dispose() {
+        LibNullWIFISocketClient.stop();
         font.dispose();
         headerFont.dispose();
         buttonFont.dispose();
@@ -110,10 +139,34 @@ public class Phouse extends ApplicationAdapter {
 class IPInputListener implements Input.TextInputListener {
     @Override
     public void input (String text) {
+        //Validate IP
+        if(!validateIP(text)) {
+            Phouse.currentStage = "WIFIEnterIP";
+            IPInputListener IPListener = new IPInputListener();
+            Gdx.input.getTextInput(IPListener, "(Invalid IP) - IP:", "", "Enter your computer's IP");
+        } else {
+            //IP Valid, ready to start server
+            LibNullWIFISocketClient.serverPort = 29992;
+            //Start server yeah :)
+            LibNullWIFISocketClient.connect(text);
+
+            Phouse.currentStage = "WIFIMouse";
+            Gdx.input.setInputProcessor(Phouse.WIFIMouseStage);
+        }
     }
 
     @Override
     public void canceled () {
         Phouse.currentStage = "mainStage";
+    }
+
+    /*
+    Validates IPs with a pattern.
+    Based on: http://stackoverflow.com/questions/5667371/validate-ipv4-address-in-java
+     */
+    public static boolean validateIP(final String ip){
+        Pattern pattern = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+        Matcher matcher = pattern.matcher(ip);
+        return matcher.matches();
     }
 }

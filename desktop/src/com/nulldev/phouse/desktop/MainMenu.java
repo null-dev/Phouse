@@ -14,6 +14,7 @@ import java.awt.Font;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
+import com.nulldev.lib.LibNullSensorTranslater;
 import com.nulldev.lib.LibNullWIFISocketServer;
 
 import java.awt.event.ActionListener;
@@ -68,6 +69,7 @@ public class MainMenu {
 			public void actionPerformed(ActionEvent e) {
 				frmPhouseDesktop.dispose();
 				LibNullWIFISocketServer.startServer();
+				LibNullSensorTranslater.init();
 				WIFIServer.main(null);
 			}
 		});
