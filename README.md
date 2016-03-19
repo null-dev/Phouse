@@ -10,6 +10,9 @@ Be aware that this may damage your phone's camera, I recommend you place a stick
 
 This app is <strong>PROOF OF CONCEPT</strong>, do not use this in production environments!
 
+# DEVELOPMENT STATUS #
+This project is **NOT** abandoned, I have an active version in a private repo but I will publish it later as I am currently using it for my science fair project.
+
 #FAQ
 
 Q: WHY U USE LIBGDX, WHY NOT JUST USE NATIVE GUI???<br>
